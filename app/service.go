@@ -2,15 +2,19 @@ package app
 
 import (
 	"github.com/koinworks/asgard-heimdal/libs/serror"
-	"github.com/luthfikw/service-simple-arch/delivery/bivrost"
-	"github.com/luthfikw/service-simple-arch/usecase"
+
+	"github.com/luthfikw/service-simple-arch/controllers"
+	"github.com/luthfikw/service-simple-arch/deliveries/bivrost"
+	"github.com/luthfikw/service-simple-arch/models"
 )
 
 func (ox *App) initService() serror.SError {
-	userCase := usecase.NewUserUsecase(ox.DB)
-	tokenCase := usecase.NewTokenUsecase(userCase)
+	models.InitModels(ox.DB)
 
-	bivrost.NewBivrostHandler(ox.Bivrost, userCase, tokenCase)
+	userControl := controllers.NewUserController()
+	tokenControl := controllers.NewTokenController(userControl)
+
+	bivrost.NewBivrostHandler(ox.Bivrost, userControl, tokenControl)
 
 	return nil
 }
